@@ -1,0 +1,45 @@
+
+close all;
+
+data = trajread('../../results/results.json');
+TimeStep = data(1,:);
+TimeStep = TimeStep./4;
+inTemp = data(2,:);
+outTemp = data(3,:);
+rtp = data(4,:);
+refTemp = data(5,:);
+dollarCost = data(6,:);
+power = data(7,:);
+
+figure(1)
+hold on
+set(gca, 'Fontsize', 18);
+grid on
+plot(TimeStep, inTemp, 'LineWidth', 3);
+plot(TimeStep, outTemp, 'LineWidth', 3);
+plot(TimeStep, refTemp, 'LineWidth', 3);
+title('Temperature Profiles')
+xlabel('Hours')
+ylabel('Temp [C]')
+legend('Internal Temperature', 'External Te
+hold off
+
+figure(2)
+hold on
+set(gca, 'Fontsize', 18);
+plot(TimeStep, power, 'LineWidth', 3)
+% plot(rtp, TimeStep)
+title('Power Consumption with RTP Signal')
+xlabel('Hours')
+ylabel('Power [kW/h]')
+hold off
+
+figure(3)
+hold on
+set(gca, 'Fontsize', 18);
+plot(TimeStep, dollarCost, 'LineWidth', 3)
+title('Dollar Cost of Running HVAC')
+xlabel('Hours')
+ylabel('USD')
+hold off
+

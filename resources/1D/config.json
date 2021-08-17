@@ -1,0 +1,20 @@
+{
+    "start": [0, 0, 0],
+    "goal": [10, 0, 0],
+    "max iterations": 5000000,
+    "samples": {
+        "branchout": 20,
+        "type": "halton",
+        "constraints": [[-1, 1]]
+    },
+    "goal threshold": 0.05,
+    "sampling time": 0.1,
+    "grid active":[true, true, false],
+    "grid resolution":[0.025, 0.025, 0],
+    "model": {
+        "type": "double integrator",
+        "time step": 0.5,
+        "heuristic": "velocity aware",
+        "max acceleration": 1
+    }
+}
