@@ -3,14 +3,9 @@
 Sampling Based Model Predictive Control (SBMPO), a novel nonlinear MPC (NMPC) approach that enables motion planning with dynamic models as well as the solution of more traditional MPC problems.
 
 The focus of our motion planning research is to develop algorithms that will enable both mobile robots and manipulators to operate intelligently in extreme environments or for extreme tasks. For mobile robots such as autonomous ground vehicles (AGVs), autonomous air vehicles (AAVs), or autonomous underwater vehicles (AUVs) an example of an extreme environment is a cluttered environment. This problem has been addressed using both reactive and deliberative planning algorithms. For AGVs extreme environments also include difficult terrains such as sand, ice and mud, and highly undulating terrains. For manipulators an extreme task is lifting objects that are so heavy that they cannot be lifted quasi-statically. A unifying feature of each of these latter problems is that they benefit from using a dynamic model in the planning process. Hence, a major focus of this research is the development and refinement of SBMPO.
+<!-- 
+For any more details on the project, please visit our [website](http://www.ciscor.org/motion-planning/). -->
 
-For any more details on the project, please visit our [website](http://www.ciscor.org/motion-planning/).
-
-# Graph Search Vizualization
-A webpage that Gwen has provided that has very helpful vizualizations for different graph search methods.
-Includes A* method used in our SBMPO implementation:
-
-[Visualizing Graph Search Methods](https://glfmn.github.io/ISC4221/)
 
 # Quick start
 
@@ -62,7 +57,7 @@ The `debug` target is much the same as `dev` except that it compiles with the `-
 
 The `release` target compiles the fastest possible binary with no extra symbols or features to enable debugging.
 
-To specify a target, pass a command-line argument `target=[deg, debug, release]`.  For example, to compile and run in the `release` target, invoke make with
+To specify a target, pass a command-line argument `target=[dev, debug, release]`.  For example, to compile and run in the `release` target, invoke make with
 
 ```
 $ make run target=release
@@ -109,7 +104,7 @@ A configuration file is provided for this example in
 
 **Start** and **Goal** vectors contain (in order): position, velocity, and force.
 
-There are three different heuristic functions preprogrammed for this example
+There are three different heuristic functions preprogrammed for this example and can be used by changing the associated config.json file's heuristic argument (line 17)
 
 **distance optimal** will optimize to minimize total distance travelled by looking at the simple difference in desired position from current position.
 
@@ -126,9 +121,9 @@ A configuration file is provided for this example in
 
 **Start** and **Goal** vectors contain (in order): x coordinate, y coordinate, heading angle, angular velocity x, angular velocity y, turn radius 
 
-While this example contains many changeable parameters, we will focus on 2: model -> **energy planning** and model -> **obstacle file** (please see the README for more details on other paramters). Setting **energy planning** to true will change the optimization to energy minimizing, false will keep the default distance optimization. 
+While this example contains many changeable parameters, two parameters impact the foundational problem solved by the model -> **energy planning** and model -> **obstacle file** . Setting **energy planning** to true will change the optimization to energy minimizing (rather than minimizing distance).
 
-**obstacle file** points to the location of the obstacle file, this is a .txt file that contains three columns corresponding to location and size of obstacle. The first column denotes the x coordinate (in meters), the second column denotes the y coordinate Iin meters). The third column denotes the radius of the obstacle.
+**obstacle file** points to the location of the obstacle file, this is a .txt file that contains three columns corresponding to location and size of obstacle. The first column denotes the x coordinate (in meters), the second column denotes the y coordinate (in meters). The third column denotes the radius of the obstacle (in meters).
 
 # Interpretting Results
 
@@ -138,7 +133,7 @@ Resulting trajectories are generated in
 /results/results.json
 ```
 
-This json file is organized with a control and state vector at each time interval. The control elements correspond to what the system is directly able to control, and the state elements denote what elements correspond to measured states of the system at that time.
+This json file is organized with a control and state vector at each time interval. The control elements correspond to what the system is directly able to control, and the state elements denote what elements correspond to measured states of the system at that time. This state and control is in a vector form and initialized in by the user in a config file (details below).
 
 ## Results of 1D Example
 
@@ -149,7 +144,7 @@ The results.json file can be parsed manually by control or state. The dictionary
 * state[1] - velocity
 * state[2] - force (same as control)
 
-This resulting information then informs the user what time-corresponding forces that were commanded which resulted in the completion of the objective (get to a specific position).
+This resulting information then informs the user the time-series of commanded forces which resulted in the completion of the objective (get to a specific position).
 
 ## Results of Kinematic Example
 
@@ -168,7 +163,7 @@ To better visualize the output of a skid-steered robot, a helpful trajectory rea
 ```
 /resources/scripts/trajread.m
 ```
-In this same folder, PlotFigs.m will return the trajectory and motion path plots in field-typical 2D map format. 
+In this same folder, PlotFigs.m will return the trajectory and motion path plots in a typical robot 2D map format. 
 
 
 # Additional Configurations
@@ -177,14 +172,14 @@ This software requires certain configuration parameters to be set in the config.
 
 * *Start* - Define the start state of the system
 * *Goal* - Define the goal state of the system
-* *Max Iteration* - Allowed limits to how long the software is allowed to expand and explore the search space
-* *Samples* - The type and size of sampling used, generally defined by the number of samples per expansion and if there are set samples or randomly drawn samples
+* *Max Iteration* - Allowed limits to how long the software is allowed to iterate and explore the search space
+* *Samples* - The type and size of sampling used, generally defined by the number of samples per expansion and if there are preset samples or randomly drawn samples
 * *Goal Threshold* - How close the end result and goal needs to be in order to constitute a successful completion
 * *Sampling Time* - Integration time or time between samples 
-* *Grid Active* - Designates which (if any) of the state features should be gridded. This refers to the "implicit" grid that is part of the SBMPO framework. The implicit grid finds and prunes nodes that have higher costs within the same grid cell. Example: two nodes occupy the same grid cell defined in this parameter by (x_position, y_position, heading_angle), prune the node that had a higher cost to get to this same cell. If heading angle was not a concern, this example would only choose to grid two parameters (x_position, y_position)
-* *Grid Resolution* - The resolution that the implicit grid (above) is set to
+* *Grid Active* - Designates which (if any) of the state features should be gridded when checking for uniqueness in nodes. This refers to the "implicit" grid that is part of the SBMPO framework. The implicit grid finds and prunes nodes that have higher costs within the same grid cell. Example: two nodes occupy the same grid cell defined by (x_position, y_position, heading_angle), the node with higher cost amongst these two similar nodes will be pruned. If heading angle was not a concern, this example would only choose to grid two parameters (x_position, y_position) resulting in more pruning
+* *Grid Resolution* - The resolution that the implicit grid (above) is set to, larger grid means more pruning
 * *Model* - used to define any model-specific components. This can include things such as vehicle geometry, obstacle locations, sensor data for the kinematic example
-* *Other Config Params* - are defined per situation but are unneccessary
+* *Other Config Params* - can be defined per specific model but are not required
 
 ### Configuration Example: Kinematic
 
