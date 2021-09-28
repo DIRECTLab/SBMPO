@@ -3,8 +3,12 @@
 
 #include "model/energy.h"
 
+//unused default constructor might take out, rule of zero
 model::EnergyModel::EnergyModel() {}
 
+//non-default constuctor that uses initializes with a json object
+//or I would think but there is an init function
+//seems to be a pre-set up for the init
 model::EnergyModel::EnergyModel(const json& j) {
 	from_json(j, *this);
 	DEBUG("MODEL => "
@@ -14,10 +18,14 @@ model::EnergyModel::EnergyModel(const json& j) {
 	);
 }
 
+//unused destructor might take out, rule of 0
 model::EnergyModel::~EnergyModel(){}
 
+//getter for control dof #need more background on what that means
 int model::EnergyModel::control_dof() { return control_dof_; }
 
+
+//set up variables from configs
 void model::EnergyModel::init(const State& state, const Control& control) {
 	// Import obstacles
 	this->import_obstacles(this->obstacle_file);
@@ -42,14 +50,21 @@ void model::EnergyModel::init(const State& state, const Control& control) {
 	);
 }
 
+
+//energy flag is set in from_json
+//which is started in non-default constructor
 float model::EnergyModel::cost(const State& current,
 	const State& next,
 	const Control& control) {
 
 	float cost;
 
-	if(energy_flag)
+	if(energy_flag){
 		cost = this->pow_distance_2d(next[0], next[1], current[0], current[1], current[3], current[4],current[5], control[1]);
+        if (current[0] == 10 && current[1] == 10) {
+            cost = cost * 5;
+        }
+    }
 	else
 		cost = this->distance(current, next, model_dof);
 
@@ -356,7 +371,8 @@ float model::EnergyModel::pow_distance_2d(
 
 
 	d = distance_2d(x1, y1, x2, y2);
-	time = d / vel;
+    //mychange 
+	time = d / vel/2;
 	radius = fabs(t_rad);
 
 	if (radius>1000) radius = 1000;
